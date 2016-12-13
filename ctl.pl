@@ -28,18 +28,18 @@ check(_,L,S,[],X) :-
 % AX
 check(A,L,S,[],ax(X)) :-
 	find_state(S,A,P),
-	all_next(A,L,P,X),!.
+	for_all(A,L,P,[],X),!.
 % EX
 check(A,L,S,[],ex(X)) :-
 	find_state(S,A,P),
-	exist_next(A,L,P,X),!.
+	exists(A,L,P,[],X),!.
 % AG
 check(_,_,S,U,ag(_)) :- 
 	in_list(S,U),!.
 check(A,L,S,U,ag(X)) :-
 	check(A,L,S,[],X),
 	find_state(S,A,P),
-	all_global(A,L,P,[S|U],X),!.
+	for_all(A,L,P,[S|U],ag(X)),!.
 % EG
 check(_,_,S,U,eg(_)) :-
 	in_list(S,U),!.
@@ -49,33 +49,22 @@ check(A,L,S,_,eg(X)) :-
 check(A,L,S,U,eg(X)) :-
 	check(A,L,S,[],X),
 	find_state(S,A,P),
-	exist_global(A,L,P,[S|U],X),!.
+	exists(A,L,P,[S|U],eg(X)),!.
 % EF
 % AF
 
 % Helpers
 
-% all_global(A,L,P,U,X)
-% Verify that all branches from list P satisfies X.
-all_global(_,_,[],_,_).
-all_global(A,L,[H|T],U,X) :- check(A,L,H,U,ag(X)),all_global(A,L,T,U,X).
+% for_all(A,L,P,U,X)
+% Verify that all states in P satisfies formula X.
+for_all(_,_,[],_,_).
+for_all(A,L,[H|T],U,X) :- check(A,L,H,U,X),for_all(A,L,T,U,X).
 
-% exist_global(A,L,P,U,X)
-% Verify that there exists a branch from list P that satisfies X.
-exist_global(_,_,[],_,_) :- fail.
-exist_global(A,L,[H|_],U,X) :- check(A,L,H,U,eg(X)),!.
-exist_global(A,L,[_|T],U,X) :- exist_global(A,L,T,U,X).
-
-% all_next(A,L,P,X)
-% Verify that all states in P satisfies X.
-all_next(_,_,[],_).
-all_next(A,L,[H|T],X) :- check(A,L,H,[],X),all_next(A,L,T,X).
-
-% exist_next(A,L,
-% Verify that at least one state in P satisfies X.
-exist_next(_,_,[],_) :- fail.
-exist_next(A,L,[H|_],X) :- check(A,L,H,[],X),!.
-exist_next(A,L,[_|T],X) :- exist_next(A,L,T,X).
+% exists(A,L,P,U,X)
+% verify that at least one state of P satisfies formula X.
+exists(_,_,[],_,_) :- fail.
+exists(A,L,[H|_],U,X) :- check(A,L,H,U,X),!.
+exists(A,L,[_|T],U,X) :- exists(A,L,T,U,X).
 
 % find_state(S,L,R)
 % Find state S in list L, if it exists, and unify P with S's Property.
