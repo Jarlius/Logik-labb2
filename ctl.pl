@@ -17,7 +17,7 @@ check(A, L, S, [], F).
 % F - CTL Formula to check.
 
 % Literals
-check(_,L,S,_,X) :- 
+check(_,L,S,_,X) :- % sätta tillbaka []?
 	find_state(S,L,P),
 	in_list(X,P),!.
 % Neg
@@ -42,6 +42,12 @@ check(A,L,S,U,ag(X)) :-
 	find_state(S,A,P),
 	all_global(A,L,P,[S|U],X),!.
 % EG
+check(_,_,S,U,eg(_)) :-
+	in_list(S,U),!.
+check(A,L,S,U,eg(X)) :-
+	check(A,L,S,[],X),
+	find_state(S,A,P),
+	exist_global(A,L,P,[S|U],X),!.
 % EF
 % AF
 
@@ -51,6 +57,12 @@ check(A,L,S,U,ag(X)) :-
 % Verify that all branches from list P satisfies X.
 all_global(_,_,[],_,_).
 all_global(A,L,[H|T],U,X) :- check(A,L,H,U,ag(X)),all_global(A,L,T,U,X).
+
+% exist_global(A,L,P,U,X)
+% Verify that there exists a branch from list P that satisfies X.
+exist_global(_,_,[],_,_) :- fail.
+exist_global(A,L,[H|_],U,X) :- check(A,L,H,U,eg(X)),!.
+exist_global(A,L,[_|T],U,X) :- exist_global(A,L,T,U,X).
 
 % all_next(A,L,P,X)
 % Verify that all states in P satisfies X.
