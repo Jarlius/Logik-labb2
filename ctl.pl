@@ -1,6 +1,3 @@
-% For SICStus, uncomment line below: (needed for member/2)
-% :- use_module(library(lists)).
-
 % Load model, initial state and formula from file.
 % To execute: consult(’your_file.pl’). verify(’input.txt’).
 verify(Input) :-
@@ -21,10 +18,18 @@ check(_,L,S,[],X) :-
 	find_state(S,L,P),
 	in_list(X,P),!.
 % Neg
-%check(_, L, S, [], neg(X)) :- ...
+check(A,L,S,[],neg(X)) :-
+	check(A,L,S,[],X),!,fail.
+check(_,_,_,[],neg(_)) :- !.
 % And
-%check(A, L, S, [], and(F,G)) :- ...
+check(A,L,S,[],and(F,G)) :-
+	check(A,L,S,[],F),
+	check(A,L,S,[],G),!.
 % Or
+check(A,L,S,[],or(F,_)) :-
+	check(A,L,S,[],F),!.
+check(A,L,S,[],or(_,G)) :-
+	check(A,L,S,[],G),!.
 % AX
 check(A,L,S,[],ax(X)) :-
 	find_state(S,A,P),
@@ -59,7 +64,7 @@ check(A,_,S,_,af(_)) :-
 	find_state(S,A,[]),!,fail.
 check(A,L,S,U,af(X)) :-
 	find_state(S,A,P),
-	for_all(A,L,P,[S|U],af(X)).
+	for_all(A,L,P,[S|U],af(X)),!.
 % EF
 check(_,_,S,U,ef(_)) :-
 	in_list(S,U),!,fail.
