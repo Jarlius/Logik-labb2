@@ -50,8 +50,24 @@ check(A,L,S,U,eg(X)) :-
 	check(A,L,S,[],X),
 	find_state(S,A,P),
 	exists(A,L,P,[S|U],eg(X)),!.
-% EF
 % AF
+check(_,_,S,U,af(_)) :-
+	in_list(S,U),!,fail.
+check(A,L,S,_,af(X)) :-
+	check(A,L,S,[],X),!.
+check(A,_,S,_,af(_)) :-
+	find_state(S,A,[]),!,fail.
+check(A,L,S,U,af(X)) :-
+	find_state(S,A,P),
+	for_all(A,L,P,[S|U],af(X)).
+% EF
+check(_,_,S,U,ef(_)) :-
+	in_list(S,U),!,fail.
+check(A,L,S,_,ef(X)) :-
+	check(A,L,S,[],X),!.
+check(A,L,S,U,ef(X)) :-
+	find_state(S,A,P),
+	exists(A,L,P,[S|U],ef(X)).
 
 % Helpers
 
