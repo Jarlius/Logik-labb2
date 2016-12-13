@@ -17,7 +17,7 @@ check(A, L, S, [], F).
 % F - CTL Formula to check.
 
 % Literals
-check(_,L,S,_,X) :- % sätta tillbaka []?
+check(_,L,S,[],X) :-
 	find_state(S,L,P),
 	in_list(X,P),!.
 % Neg
@@ -26,15 +26,14 @@ check(_,L,S,_,X) :- % sätta tillbaka []?
 %check(A, L, S, [], and(F,G)) :- ...
 % Or
 % AX
-check(A,L,S,_,ax(X)) :-
+check(A,L,S,[],ax(X)) :-
 	find_state(S,A,P),
 	all_next(A,L,P,X),!.
 % EX
-check(A,L,S,_,ex(X)) :-
+check(A,L,S,[],ex(X)) :-
 	find_state(S,A,P),
 	exist_next(A,L,P,X),!.
 % AG
-% borde lägga till tom labellista här, som ska ge true samma som redan nådd
 check(_,_,S,U,ag(_)) :- 
 	in_list(S,U),!.
 check(A,L,S,U,ag(X)) :-
@@ -44,6 +43,9 @@ check(A,L,S,U,ag(X)) :-
 % EG
 check(_,_,S,U,eg(_)) :-
 	in_list(S,U),!.
+check(A,L,S,_,eg(X)) :-
+	find_state(S,A,[]),!,
+	check(A,L,S,[],X).
 check(A,L,S,U,eg(X)) :-
 	check(A,L,S,[],X),
 	find_state(S,A,P),
