@@ -4,10 +4,10 @@ verify(Input) :-
 see(Input), read(T), read(L), read(S), read(F), seen,
 check(T, L, S, [], F).
 
-% check(A, L, S, U, F).
+% check(T, L, S, U, F).
 % Should evaluate to true iff the sequent below is valid.
-% (A,L), S |-u F
-% A - The transitions in form of adjacency lists
+% (T,L), S |-u F
+% T - The transitions in form of adjacency lists
 % L - The labeling
 % S - Current state
 % U - Currently recorded states
